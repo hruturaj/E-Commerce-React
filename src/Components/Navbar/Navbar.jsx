@@ -3,6 +3,10 @@ import styled from "styled-components";
 import SearchIcon from "@mui/icons-material/Search";
 import Badge from "@mui/material/Badge";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import Register from "../../Components/Register/Register";
+import Signup from "../../Components/Signup/Signup";
+import { useState, useEffect } from "react";
+
 const Container = styled.div`
   height: 60px;
 `;
@@ -58,6 +62,28 @@ const Languages = styled.span`
 `;
 
 const Navbar = (styled) => {
+  const [register, registerClick] = useState(false);
+  const [signIn, signInClick] = useState(false);
+
+  // can used to stop scrolling when modal is loaded
+  // useEffect(() => {
+  //   if (register) {
+  //     document.body.style.overflowY = "hidden";
+  //     console.log("hidden");
+  //   } else {
+  //     document.body.style.overflow = "unset";
+  //     console.log("unset");
+  //   }
+  // });
+
+  const registerModelOpen = () => {
+    registerClick(true);
+  };
+
+  const signInModelOpen = () => {
+    signInClick(true);
+  };
+
   return (
     <div>
       <Container>
@@ -73,8 +99,8 @@ const Navbar = (styled) => {
             <Logo>.RE-NO-JS.</Logo>
           </Center>
           <Right>
-            <MenuItem>Register</MenuItem>
-            <MenuItem>Sign In</MenuItem>
+            <MenuItem onClick={registerModelOpen}>Register</MenuItem>
+            <MenuItem onClick={signInModelOpen}>Sign In</MenuItem>
             <MenuItem>
               <Badge badgeContent={4} color="primary">
                 <ShoppingCartOutlinedIcon></ShoppingCartOutlinedIcon>
@@ -83,6 +109,10 @@ const Navbar = (styled) => {
           </Right>
         </Wrapper>
       </Container>
+      {register ? <Register registerClick={registerClick} /> : null}
+      {signIn ? (
+        <Signup signInClick={signInClick} registerClick={registerClick} />
+      ) : null}
     </div>
   );
 };
