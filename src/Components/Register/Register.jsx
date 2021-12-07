@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import CloseIcon from "@mui/icons-material/Close";
+import { mobile } from "../../responsive";
 
 const Container = styled.div`
   width: 100%;
@@ -18,14 +19,17 @@ const Wrapper = styled.div`
   background-color: white;
   padding: 20px 30px;
   width: 40%;
-  @media only screen and (max-width: 768px) {
-    width: 60%;
-  }
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   z-index: 12;
+
+  @media only screen and (max-width: 768px) {
+    width: 60%;
+  }
+
+  ${mobile({ width: "80%" })}
 `;
 
 const Title = styled.h1`
@@ -44,6 +48,7 @@ const Input = styled.input`
   min-width: 40%;
   margin: 20px 5px 0px 5px;
   padding: 10px;
+  ${mobile({ margin: "10px" })}
 `;
 
 const Agreement = styled.div`
@@ -66,6 +71,8 @@ const Button = styled.button`
     box-shadow: inset 0px 0px 5px #009090;
     outline: none;
   }
+
+  ${mobile({ margin: "10px 0" })}
 `;
 
 const ButtonClose = styled.button`

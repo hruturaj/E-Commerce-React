@@ -4,6 +4,7 @@ import { useState } from "react";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { sliderItems } from "../../data";
+import { mobile } from "../../responsive.js";
 
 const Container = styled.div`
   width: 100%;
@@ -12,6 +13,7 @@ const Container = styled.div`
   position: relative;
   overflow: hidden;
   margin-bottom: 40px;
+  ${mobile({ display: "none" })}
 `;
 
 const Arrow = styled.div`

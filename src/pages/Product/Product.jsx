@@ -4,9 +4,9 @@ import Announcement from "../../Components/Announcement/Announcement";
 import Navbar from "../../Components/Navbar/Navbar";
 import Newsletter from "../../Components/Newsletter/Newsletter";
 import Footer from "../../Components/Footer/Footer";
-
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { mobile } from "../../responsive";
 
 const Container = styled.div``;
 
@@ -15,19 +15,23 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 20px;
+  ${mobile({ flexDirection: "column", padding: "10px" })}
 `;
 
 const ImgContainer = styled.div`
   flex: 1;
+  ${mobile({ width: "100%" })}
 `;
 const Image = styled.img`
   width: 100%;
   object-fit: cover;
   height: 80vh;
+  ${mobile({ height: "40vh" })}
 `;
 const InfoContainer = styled.div`
   flex: 1;
   padding: 0 50px;
+  ${mobile({ padding: "0 10px" })}
 `;
 const Title = styled.h1`
   font-weight: 600;
@@ -48,6 +52,8 @@ const FilterContainer = styled.div`
   margin: 30px 0;
   justify-content: space-between;
   align-items: center;
+
+  ${mobile({ width: "100%" })}
 
   @media only screen and (max-width: 768px) {
     width: 100%;
@@ -90,6 +96,7 @@ const AddContainer = styled.div`
 
   @media only screen and (max-width: 768px) {
     width: 100%;
+    margin-bottom: 10px;
   }
 `;
 
@@ -109,6 +116,7 @@ const Amount = styled.span`
   justify-content: center;
   margin: 0 5px;
   cursor: default;
+  ${mobile({ margin: "0 20px" })}
 `;
 
 const Button = styled.button`
