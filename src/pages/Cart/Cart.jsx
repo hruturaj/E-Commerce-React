@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Navbar from "../../Components/Navbar/Navbar";
 import Announcement from "../../Components/Announcement/Announcement";
@@ -6,6 +6,10 @@ import Footer from "../../Components/Footer/Footer";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { mobile } from "../../responsive";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+
+const STRIPE_KEY = process.env.REACT_APP_STRIPE;
 
 const Container = styled.div``;
 
@@ -167,6 +171,14 @@ const SummaryButton = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const products = cart.products;
+  const [stripeToken, setStripeToken] = useState(null);
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+  console.log(stripeToken);
   return (
     <Container>
       <Navbar />
@@ -183,63 +195,43 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetails>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A"></Image>
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> JESSIE THUNDER SHOES
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 62837239029
-                  </ProductId>
-                  <ProductColor color="black"> </ProductColor>
-                  <ProductSize>
-                    <b>Size:</b> 37.5
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon style={{ cursor: "pointer" }} />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveIcon style={{ cursor: "pointer" }} />
-                </ProductAmountContainer>
-                <ProductPrice>RS. 600</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {products?.map((product) => (
+              <Product>
+                <ProductDetails>
+                  <Image src={product.img}></Image>
+                  <Details>
+                    <ProductName>
+                      <b>Product:</b> {product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b> {product._id}
+                    </ProductId>
+                    <ProductColor color={product.color}> </ProductColor>
+                    <ProductSize>
+                      <b>Size:</b> {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetails>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <AddIcon style={{ cursor: "pointer" }} />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <RemoveIcon style={{ cursor: "pointer" }} />
+                  </ProductAmountContainer>
+                  <ProductPrice>
+                    RS. {product.quantity * product.price}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
+
             <Line />
-            <Product>
-              <ProductDetails>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A"></Image>
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> JESSIE THUNDER SHOES
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 62837239029
-                  </ProductId>
-                  <ProductColor color="black"> </ProductColor>
-                  <ProductSize>
-                    <b>Size:</b> 37.5
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon style={{ cursor: "pointer" }} />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveIcon style={{ cursor: "pointer" }} />
-                </ProductAmountContainer>
-                <ProductPrice>RS. 600</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>Rs 80</SummaryItemPrice>
+              <SummaryItemPrice>Rs {cart.totalPrice}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -251,9 +243,22 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>Rs 80</SummaryItemPrice>
+              <SummaryItemPrice>Rs {cart.totalPrice}</SummaryItemPrice>
             </SummaryItem>
-            <SummaryButton>CHECKOUT NOW</SummaryButton>
+            <StripeCheckout
+              name="RO-NO-JS"
+              image="https://avatars.githubusercontent.com/u/31754884?v=4"
+              billingAddress
+              shippingAddress
+              description={`Your total is Rs. ${cart.totalPrice}`}
+              amount={cart.totalPrice * 100}
+              token={onToken}
+              stripeKey={STRIPE_KEY}
+              currency="INR"
+              triggerEvent="onClick"
+            >
+              <SummaryButton>CHECKOUT NOW</SummaryButton>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>

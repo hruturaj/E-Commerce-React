@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Product from "../Product/Product";
 import { popularProducts } from "../../data";
+import axios from "axios";
 
 const Container = styled.div`
   padding: 20px;
@@ -11,12 +12,59 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Products = () => {
+const Products = ({ filters, category, sortFilter }) => {
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  useEffect(() => {
+    axios
+      .get(
+        category
+          ? `http://localhost:3000/api/products?category=${category}`
+          : `http://localhost:3000/api/products`
+      )
+      .then((res) => res.data)
+      .then((data) => setProducts(data))
+      .catch((err) => console.log(err));
+  }, [category]);
+
+  useEffect(() => {
+    category &&
+      setFilteredProducts(
+        products.filter((item) =>
+          Object.entries(filters).every(([key, value]) =>
+            item[key].includes(value)
+          )
+        )
+      );
+  }, [products, category, filters]);
+
+  useEffect(() => {
+    if (sortFilter === "newest") {
+      setFilteredProducts((prev) =>
+        [...prev].sort((a, b) => a.createdAt - b.createdAt)
+      );
+    } else if (sortFilter === "asc") {
+      setFilteredProducts((prev) =>
+        [...prev].sort((a, b) => a.price - b.price)
+      );
+    } else {
+      setFilteredProducts((prev) =>
+        [...prev].sort((a, b) => b.price - a.price)
+      );
+    }
+  }, [sortFilter]);
+
   return (
     <Container>
-      {popularProducts.map((product) => (
-        <Product product={product} key={product.id}></Product>
-      ))}
+      {category
+        ? filteredProducts.map((product) => (
+            <Product product={product} key={product._id}></Product>
+          ))
+        : products
+            .slice(0, 8)
+            .map((product) => (
+              <Product product={product} key={product._id}></Product>
+            ))}
     </Container>
   );
 };

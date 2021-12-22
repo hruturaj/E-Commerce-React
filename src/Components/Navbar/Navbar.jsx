@@ -7,6 +7,8 @@ import Register from "../../Components/Register/Register";
 import Signup from "../../Components/Signup/Signup";
 import { useState, useEffect } from "react";
 import { mobile } from "../../responsive.js";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   height: 60px;
@@ -58,6 +60,8 @@ const Logo = styled.h1`
 const Center = styled.div`
   flex: 1;
   text-align: center;
+  text-decoration: none;
+  color: black;
 `;
 const Right = styled.div`
   flex: 1;
@@ -88,6 +92,8 @@ const Navbar = (styled) => {
   const [register, registerClick] = useState(false);
   const [signIn, signInClick] = useState(false);
   const [navbarFixed, setNavbarToFixed] = useState(false);
+
+  const quantity = useSelector((state) => state.cart.cartQuantity);
 
   // can used to stop scrolling when modal is loaded
   useEffect(() => {
@@ -125,16 +131,23 @@ const Navbar = (styled) => {
           </SearchContainer>
         </Left>
         <Center>
-          <Logo>.RE-NO-JS.</Logo>
+          <NavLink to="/" style={{ color: "black", textDecoration: "none" }}>
+            <Logo>.RE-NO-JS.</Logo>
+          </NavLink>
         </Center>
         <Right>
           <MenuItem onClick={registerModelOpen}>Register</MenuItem>
           <MenuItem onClick={signInModelOpen}>Sign In</MenuItem>
-          <MenuItem type="badge">
-            <Badge badgeContent={4} color="primary">
-              <ShoppingCartOutlinedIcon></ShoppingCartOutlinedIcon>
-            </Badge>
-          </MenuItem>
+          <NavLink
+            to="/cart"
+            style={{ color: "black", textDecoration: "none" }}
+          >
+            <MenuItem type="badge">
+              <Badge badgeContent={quantity} color="primary">
+                <ShoppingCartOutlinedIcon></ShoppingCartOutlinedIcon>
+              </Badge>
+            </MenuItem>
+          </NavLink>
         </Right>
       </Wrapper>
       {register ? <Register registerClick={registerClick} /> : null}

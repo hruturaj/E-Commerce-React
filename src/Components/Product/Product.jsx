@@ -4,6 +4,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 //import FavoriteIcon from "@mui/icons-material/Favorite";
+import { NavLink } from "react-router-dom";
 
 const Info = styled.div`
   opacity: 0;
@@ -75,7 +76,12 @@ const Product = ({ product }) => {
           <ShoppingCartOutlinedIcon />
         </Icon>
         <Icon>
-          <SearchOutlinedIcon />
+          <NavLink
+            to={`/product/${product._id}`}
+            style={{ color: "black", textDecoration: "none" }}
+          >
+            <SearchOutlinedIcon />
+          </NavLink>
         </Icon>
         <Icon>
           <FavoriteBorderOutlinedIcon />

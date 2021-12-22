@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Announcement from "../../Components/Announcement/Announcement";
 import Navbar from "../../Components/Navbar/Navbar";
@@ -7,6 +7,13 @@ import Footer from "../../Components/Footer/Footer";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { mobile } from "../../responsive";
+import { useLocation } from "react-router-dom";
+import { publicRequest } from "../../requestMethods";
+import { addProduct } from "../../redux/cartRedux";
+import { useDispatch } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div``;
 
@@ -67,6 +74,10 @@ const FilterColor = styled.div`
   background-color: ${(props) => props.color};
   margin: 0 4px;
   cursor: pointer;
+
+  :hover {
+    transform: scale(1.2);
+  }
 `;
 
 const Filter = styled.div`
@@ -140,52 +151,128 @@ const Button = styled.button`
 `;
 
 const Product = () => {
+  const product_id = useLocation().pathname.split("/")[2];
+  const [product, setProduct] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const dispatch = useDispatch();
+
+  const handleQuantity = (val) => {
+    if (val === "inc") {
+      setQuantity((prev) => prev + 1);
+    } else {
+      quantity > 1 && setQuantity((prev) => prev - 1);
+    }
+  };
+
+  const handleClick = () => {
+    //update cart
+    !color && !size
+      ? toast.error("Error!", {
+          position: "top-center",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        })
+      : dispatch(addProduct({ ...product, quantity, color, size }));
+    toast.clearWaitingQueue();
+  };
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await publicRequest.get("/products/find/" + product_id);
+        setProduct(res.data);
+      } catch {}
+    };
+
+    getProduct();
+  }, [product_id]);
+
+  useEffect(() => {
+    const colors = product.color;
+    if (color.length > 0) {
+      colors.map((item) => {
+        const ele = document.getElementById(item);
+        ele.style.border = "none";
+        ele.style.transition = "none";
+      });
+      document.getElementById(color).style.border = "2px solid black";
+      document.getElementById(color).style.transform = "scale(1.1)";
+    }
+  }, [color]);
+
   return (
     <Container>
       <Announcement message="Super Deal! Free Shippingg on orders above Rs 1000!" />
       <Navbar />
-
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        limit={1}
+      />
       <Wrapper>
         <ImgContainer>
-          <Image src="https://i.ibb.co/S6qMxwr/jean.jpg"></Image>
+          <Image src={product.img}></Image>
         </ImgContainer>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
-          <Desc>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris eu
-            felis in quam pharetra volutpat. Proin a pulvinar libero. Aenean
-            vitae nunc nec dolor aliquet commodo. Phasellus dignissim nulla a
-            eleifend ultrices. Nunc volutpat turpis a nisl rutrum luctus.
-            Vestibulum imperdiet magna vel lectus venenatis, et fermentum metus
-            convallis.
-          </Desc>
-          <Price>Rs 20</Price>
+          <Title>{product.title}</Title>
+          <Desc>{product.description}</Desc>
+          <Price>Rs {product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
-              <FilterColor color="black" />
-              <FilterColor color="darkblue" />
-              <FilterColor color="gray" />
+              {product.color?.map((c) => (
+                <FilterColor
+                  color={c}
+                  key={c}
+                  id={c}
+                  onClick={() => {
+                    setColor(c);
+                  }}
+                />
+              ))}
             </Filter>
             <Filter>
               <FilterTitle>Size</FilterTitle>
-              <FilterSize>
-                <FilterSizeOption>XS</FilterSizeOption>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
-                <FilterSizeOption>XL</FilterSizeOption>
-                <FilterSizeOption>XXL</FilterSizeOption>
+              <FilterSize
+                onChange={(e) => {
+                  setSize(e.target.value);
+                }}
+              >
+                {product.size?.map((s) => (
+                  <FilterSizeOption key={s}>{s}</FilterSizeOption>
+                ))}
               </FilterSize>
             </Filter>
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <RemoveIcon style={{ cursor: "pointer" }} />
-              <Amount>1</Amount>
-              <AddIcon style={{ cursor: "pointer" }} />
+              <RemoveIcon
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handleQuantity("dec");
+                }}
+              />
+              <Amount>{quantity}</Amount>
+              <AddIcon
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  handleQuantity("inc");
+                }}
+              />
             </AmountContainer>
-            <Button>Add to Cart</Button>
+            <Button onClick={handleClick}>Add to Cart</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>
