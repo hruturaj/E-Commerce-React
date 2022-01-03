@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import CloseIcon from "@mui/icons-material/Close";
 import { mobile } from "../../responsive";
+import { login } from "../../redux/apiCalls";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
@@ -54,7 +57,7 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   width: 40%;
   border: none;
   padding: 10px 15px;
@@ -69,6 +72,16 @@ const Button = styled.button`
     box-shadow: inset 0px 0px 5px #009090;
     outline: none;
   }
+
+  &:disabled {
+    color: cyan;
+    cursor: not-allowed;
+  }
+`;
+
+const Error = styled.span`
+  color: red;
+  font-size: 14px;
 `;
 
 const ButtonClose = styled.button`
@@ -119,7 +132,12 @@ const Link = styled.a`
   }
 `;
 
-const Signup = ({ signInClick, registerClick }) => {
+const SignIn = ({ signInClick, registerClick }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const { isFetching, error } = useSelector((state) => state.user);
+
   const modalClose = () => {
     signInClick(false);
   };
@@ -127,6 +145,11 @@ const Signup = ({ signInClick, registerClick }) => {
   const openRegisteModal = () => {
     signInClick(false);
     registerClick(true);
+  };
+
+  const loginClick = (e) => {
+    e.preventDefault();
+    login(dispatch, { username, password });
   };
 
   return (
@@ -138,10 +161,22 @@ const Signup = ({ signInClick, registerClick }) => {
         </ButtonClose>
         <Title>SIGN IN</Title>
         <Form>
-          <Input placeholder="email" />
-          <Input placeholder="password" />
+          <Input
+            placeholder="username"
+            autoComplete="username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <Input
+            placeholder="password"
+            type="password"
+            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Form>
-        <Button>LOGIN</Button>
+        <Button onClick={loginClick} disabled={isFetching}>
+          LOGIN
+        </Button>
+        {error && <Error>Something went wrong...</Error>}
         <LinkContainer>
           <Link>Forget Password ?</Link>
           <Link onClick={openRegisteModal}>Create New Account</Link>
@@ -151,4 +186,4 @@ const Signup = ({ signInClick, registerClick }) => {
   );
 };
 
-export default Signup;
+export default SignIn;

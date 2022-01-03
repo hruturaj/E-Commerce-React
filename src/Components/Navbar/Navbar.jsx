@@ -4,7 +4,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Badge from "@mui/material/Badge";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import Register from "../../Components/Register/Register";
-import Signup from "../../Components/Signup/Signup";
+import SignIn from "../SignIn/SignIn";
 import { useState, useEffect } from "react";
 import { mobile } from "../../responsive.js";
 import { NavLink } from "react-router-dom";
@@ -75,11 +75,12 @@ const MenuItem = styled.div`
   font-size: 14px;
   cursor: pointer;
   margin: 0 12px;
+  text-transform: ${(props) => props.user && "capitalize"};
   ${mobile({
     fontSize: "12px",
     margin: "0 8px",
     marginRight: (prop) => prop.type === "badge" && "15px",
-  })}
+  })};
 `;
 
 const Languages = styled.span`
@@ -94,6 +95,8 @@ const Navbar = (styled) => {
   const [navbarFixed, setNavbarToFixed] = useState(false);
 
   const quantity = useSelector((state) => state.cart.cartQuantity);
+  const user = useSelector((state) => state.user.currentUser);
+  console.log(user);
 
   // can used to stop scrolling when modal is loaded
   useEffect(() => {
@@ -111,6 +114,11 @@ const Navbar = (styled) => {
       document.body.style.overflow = "unset";
     }
   });
+
+  useEffect(() => {
+    registerClick(false);
+    signInClick(false);
+  }, [user]);
 
   const registerModelOpen = () => {
     registerClick(true);
@@ -136,8 +144,14 @@ const Navbar = (styled) => {
           </NavLink>
         </Center>
         <Right>
-          <MenuItem onClick={registerModelOpen}>Register</MenuItem>
-          <MenuItem onClick={signInModelOpen}>Sign In</MenuItem>
+          {user ? (
+            <MenuItem user="user">{user && user.data.username}</MenuItem>
+          ) : (
+            <>
+              <MenuItem onClick={registerModelOpen}>Register</MenuItem>
+              <MenuItem onClick={signInModelOpen}>Sign In</MenuItem>
+            </>
+          )}
           <NavLink
             to="/cart"
             style={{ color: "black", textDecoration: "none" }}
@@ -152,7 +166,7 @@ const Navbar = (styled) => {
       </Wrapper>
       {register ? <Register registerClick={registerClick} /> : null}
       {signIn ? (
-        <Signup signInClick={signInClick} registerClick={registerClick} />
+        <SignIn signInClick={signInClick} registerClick={registerClick} />
       ) : null}
     </Container>
   );
