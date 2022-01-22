@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Product from "../Product/Product";
-import { popularProducts } from "../../data";
 import axios from "axios";
+import { publicRequest } from "../../requestMethods";
 
 const Container = styled.div`
   padding: 20px;
@@ -19,8 +19,8 @@ const Products = ({ filters, category, sortFilter }) => {
     axios
       .get(
         category
-          ? `http://localhost:3000/api/products?category=${category}`
-          : `http://localhost:3000/api/products`
+          ? `https://node-e-com.herokuapp.com/api/products?category=${category}`
+          : `https://node-e-com.herokuapp.com/api/products`
       )
       .then((res) => res.data)
       .then((data) => setProducts(data))

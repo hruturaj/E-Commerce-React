@@ -1,8 +1,17 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:3000/api";
-const TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNzNiMDVmZTkzOWFlNTBjMDAyZTFiZiIsImlzQWRtaW4iOnRydWUsImlhdCI6MTY0MDI3MDAzMCwiZXhwIjoxNjQwNTI5MjMwfQ.t8uRHurWns8QnTOzxgCO2fBFbkeVlWJQMUVIswboloE";
+const BASE_URL = "https://node-e-com.herokuapp.com/api";
+const TOKEN = "";
+
+if (JSON.parse(localStorage.getItem("persist:root")) !== null) {
+  if (
+    JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user)
+      .currentUser !== null
+  ) {
+    TOKEN = JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user)
+      .currentUser.accessToken;
+  }
+}
 
 export const publicRequest = axios.create({
   baseURL: BASE_URL,

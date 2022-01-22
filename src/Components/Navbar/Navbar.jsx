@@ -8,7 +8,8 @@ import SignIn from "../SignIn/SignIn";
 import { useState, useEffect } from "react";
 import { mobile } from "../../responsive.js";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/apiCalls";
 
 const Container = styled.div`
   height: 60px;
@@ -89,14 +90,20 @@ const Languages = styled.span`
   ${mobile({ display: "none" })}
 `;
 
+const Logout = styled.div``;
+
 const Navbar = (styled) => {
+  const dispatch = useDispatch();
   const [register, registerClick] = useState(false);
   const [signIn, signInClick] = useState(false);
   const [navbarFixed, setNavbarToFixed] = useState(false);
 
   const quantity = useSelector((state) => state.cart.cartQuantity);
   const user = useSelector((state) => state.user.currentUser);
-  console.log(user);
+
+  const logoutEvent = () => {
+    logout(dispatch);
+  };
 
   // can used to stop scrolling when modal is loaded
   useEffect(() => {
@@ -145,7 +152,10 @@ const Navbar = (styled) => {
         </Center>
         <Right>
           {user ? (
-            <MenuItem user="user">{user && user.data.username}</MenuItem>
+            <>
+              <MenuItem user="user">{user && user.data.username}</MenuItem>
+              <MenuItem onClick={logoutEvent}>Logout</MenuItem>
+            </>
           ) : (
             <>
               <MenuItem onClick={registerModelOpen}>Register</MenuItem>
